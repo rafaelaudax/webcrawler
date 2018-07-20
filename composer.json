@@ -1,0 +1,22 @@
+{
+  "name": "audax/webcrawler",
+  "description": "Web Crawler",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Rafael Dimas",
+      "email": "rafael@grupoaudax.com.br"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "WebCrawler\\": "src/"
+    }
+  },
+  "require": {
+    "symfony/dom-crawler": "^3.4",
+    "symfony/css-selector": "^3.4",
+    "guzzlehttp/guzzle": "~6.0"
+  }
+}

@@ -1,20 +1,24 @@
 <?php
 
-require_once 'vendor/autoload.php';
+ini_set('display_errors',1);
+ini_set('display_startup_erros',1);
+error_reporting(E_ALL);
 
-$skus = ['T82612', 'AT203579'];
+use WebCrawler\Product\Crawler;
 
-try {
+require_once __DIR__. '/vendor/autoload.php';
 
-    foreach ($responses as $response) {
-        var_dump($response);
-//        $crawler = new Crawler((string) $response->getBody());
-//        $info = $crawler->filter(CSS_SELECTOR);
-//
-//        var_dump($info);
-    }
+$crawler = new Crawler();
 
-} catch (Exception $e) {
-    var_dump($e->getMessage());
-}
+$crawler->handleRequests([
+    'T82612',
+    '0005721',
+    '0032143',
+    '5P1076',
+    '0029488',
+    '0005722',
+    '0005875',
+]);
 
+$resultsSuccessful = $crawler->getFormattedResult();
+$resultsUnsuccessful = $crawler->getFormattedResult(false);

@@ -54,17 +54,17 @@ class Web
     }
 
     /**
-     * @param array $queryParam
+     * @param array|\Iterator $queryParam
      * @return $this
      */
-    public function setQueryParam(array $queryParam)
+    public function setQueryParam($queryParam)
     {
         $this->queryParam = $queryParam;
         return $this;
     }
 
     /**
-     * @return array
+     * @return array|\Iterator
      */
     public function getQueryParam()
     {
@@ -116,7 +116,7 @@ class Web
     {
         $successful = [];
         foreach ($this->getResponses() as $key => $response) {
-            if ($this->isSuccess($response['value'])) {
+            if ($this->isSuccess($response)) {
                 $successful[$key] = $response['value'];
             }
         }
@@ -130,7 +130,7 @@ class Web
     {
         $unsuccessful = [];
         foreach ($this->getResponses() as $key => $response) {
-            if ($this->isError($response['value'])) {
+            if ($this->isError($response)) {
                 $unsuccessful[$key] = $response['value'];
             }
         }
@@ -159,7 +159,7 @@ class Web
      */
     public function isSuccess($object)
     {
-        return $object instanceof Response;
+        return isset($object['value']) && $object['value'] instanceof Response;
     }
 
     /**
@@ -168,6 +168,13 @@ class Web
      */
     public function isError($object)
     {
-        return $object instanceof ClientException;
+        return isset($object['value']) && $object['value'] instanceof ClientException;
+    }
+
+    public function clear()
+    {
+        $this->promises = [];
+        $this->queryParam = [];
+        $this->nameQueryParam = null;
     }
 }

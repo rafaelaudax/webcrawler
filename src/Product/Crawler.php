@@ -44,10 +44,10 @@ class Crawler
     }
 
     /**
-     * @param array $params
+     * @param array|\Iterator $params
      * @return Crawler
      */
-    public function handleRequests(array $params)
+    public function handleRequests($params)
     {
         $this->getWeb()->setQueryParam($params)->resolveAllPromises();
         return $this;
@@ -119,8 +119,8 @@ class Crawler
     {
         $item = [];
         foreach (array_chunk($result->extract(['_text']), 3) as $values) {
-            list($sku, $desciption, $brand) = $values;
-            $item[] = compact('sku', 'desciption', 'brand');
+            list($sku, $description, $brand) = $values;
+            $item[] = compact('sku', 'description', 'brand');
         }
         return $item;
     }

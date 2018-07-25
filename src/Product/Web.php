@@ -5,14 +5,11 @@ namespace WebCrawler\Product;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Promise;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Response;
 
-class Web
+abstract class Web
 {
-    const BASE_URL_DEFAULT = 'https://www.aga-parts.com/';
-    const URL_DEFAULT = 'search';
-    const NAME_QUERY_PARAM_DEFAULT = 'q';
-
     /**
      * @var Client
      */
@@ -31,72 +28,101 @@ class Web
     /**
      * @var array
      */
-    protected $queryParam = [];
+    protected $params = [];
 
     /**
-     * @var string
+     * @var array
      */
-    protected $nameQueryParam;
+    protected $clientOptions= [];
 
     /**
-     * @param bool $url
+     * @param Client $client
+     * @param $param
+     * @return mixed
+     */
+    abstract protected function makeRequest(Client $client, $param);
+
+    /**
      * @return Client
      */
-    protected function getClient($url = false)
+    protected function getClient()
     {
         if (!$this->client) {
-            $this->client = new Client([
-                'base_uri' => $url ?: self::BASE_URL_DEFAULT,
-                'verify' => false,
-            ]);
+            $this->client = new Client($this->getClientOptions());
         }
         return $this->client;
     }
 
     /**
-     * @param array|\Iterator $queryParam
+     * @return PromiseInterface[]
+     */
+    public function getPromises()
+    {
+        return $this->promises;
+    }
+
+    /**
+     * @param PromiseInterface[] $promises
+     */
+    public function setPromises($promises)
+    {
+        $this->promises = $promises;
+    }
+
+    /**
+     * @param $key
+     * @param PromiseInterface $promise
+     */
+    public function addPromises($key, $promise)
+    {
+        $this->promises[$key] = $promise;
+    }
+    
+    /**
+     * @param array|\Iterator $params
      * @return $this
      */
-    public function setQueryParam($queryParam)
+    public function setParams($params)
     {
-        $this->queryParam = $queryParam;
+        $this->params = $params;
         return $this;
     }
 
     /**
      * @return array|\Iterator
      */
-    public function getQueryParam()
+    public function getParams()
     {
-        return $this->queryParam ?: [];
+        return $this->params ?: [];
     }
 
     /**
-     * @return string
+     * @param array $clientOptions
+     * @return Web
      */
-    public function getNameQueryParam()
+    public function setClientOptions($clientOptions)
     {
-        return $this->nameQueryParam ?: self::NAME_QUERY_PARAM_DEFAULT;
+        $this->clientOptions = $clientOptions;
+        return $this;
     }
 
     /**
-     * @param string $nameQueryParam
+     * @return array
      */
-    public function setNameQueryParam($nameQueryParam)
+    public function getClientOptions()
     {
-        $this->nameQueryParam = $nameQueryParam;
+        return $this->clientOptions ?: [];
     }
 
     /**
-     *
+     * @return $this
      */
     protected function makePromises()
     {
-        foreach ($this->getQueryParam() as $queryParam) {
-            $this->promises[$queryParam] = $this->getClient()->getAsync('search', [
-                'query' => [$this->getNameQueryParam() => $queryParam]
-            ]);
+        foreach ($this->getParams() as $param) {
+            $this->addPromises($param, $this->makeRequest($this->getClient(), $param));
         }
+        return $this;
     }
 
     /**
@@ -105,7 +131,7 @@ class Web
     public function resolveAllPromises()
     {
         $this->makePromises();
-        $this->setResponses(Promise\settle($this->promises)->wait());
+        $this->setResponses(Promise\settle($this->getPromises())->wait());
         return $this;
     }
 
@@ -174,7 +200,6 @@ class Web
     public function clear()
     {
         $this->promises = [];
-        $this->queryParam = [];
-        $this->nameQueryParam = null;
+        $this->params = [];
     }
 }

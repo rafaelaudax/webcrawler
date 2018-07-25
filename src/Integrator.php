@@ -4,90 +4,116 @@ namespace WebCrawler;
 
 use WebCrawler\File\Csv\Handle;
 use WebCrawler\Product\Crawler;
+use WebCrawler\Product\Web;
 
 class Integrator
 {
-    /**
-     * @var Crawler
-     */
-    private $crawler;
+    private $type;
+
+    private $instances = [];
+
+    private $handlesByType = [
+        'megaron' => [
+            'web' => \WebCrawler\Product\Web\Megaron::class,
+            'crawler' => \WebCrawler\Product\Crawler\Megaron::class,
+            'handle' => \WebCrawler\File\Csv\Handle\Megaron::class,
+        ],
+        'agaparts' => [
+            'web' => \WebCrawler\Product\Web\AgaParts::class,
+            'crawler' => \WebCrawler\Product\Crawler\AgaParts::class,
+            'handle' => \WebCrawler\File\Csv\Handle\AgaParts::class,
+        ]
+    ];
 
     /**
-     * @var Handle
+     * @param mixed $type
+     * @return Integrator
      */
-    private $handleFile;
-
-    /**
-     * Integrator constructor.
-     */
-    public function __construct()
+    public function setType($type)
     {
-        $this->crawler = new Crawler();
-        $this->handleFile = new Handle();
+        $this->type = $type;
+        return $this;
     }
 
     /**
-     * @return \Iterator
+     * @return mixed
      */
-    private function getSkus()
+    public function getType()
     {
-        return $this->handleFile->setFileData(FILE_DATA)->getDataSku();
+        return $this->type;
+    }
+
+    protected function getInstanceByClass($class)
+    {
+        if ($class) {
+            if (isset($this->instances[$class])) {
+                return $this->instances[$class];
+            }
+            return $this->instances[$class] = new $class;
+        }
+        return false;
     }
 
     /**
-     * @param int $size
-     * @return array
+     * @return bool|Web
      */
-    private function getSkusChucked($size = 10)
+    protected function getWeb()
     {
-        $iterator = $this->getSkus();
-        return array_chunk(iterator_to_array($iterator), $size);
+        if (isset($this->handlesByType[$this->getType()])) {
+            return $this->getInstanceByClass($this->handlesByType[$this->getType()]['web'] ?: false);
+        }
+        return false;
+    }
+
+    /**
+     * @return bool|Crawler
+     */
+    protected function getCrawler()
+    {
+        if (isset($this->handlesByType[$this->getType()])) {
+            return $this->getInstanceByClass($this->handlesByType[$this->getType()]['crawler'] ?: false);
+        }
+        return false;
+    }
+
+    /**
+     * @return bool|Handle
+     */
+    protected function getHandle()
+    {
+        if (isset($this->handlesByType[$this->getType()])) {
+            return $this->getInstanceByClass($this->handlesByType[$this->getType()]['handle'] ?: false);
+        }
+        return false;
     }
 
     public function handleSaveData()
     {
         try {
-            $skusChucked = $this->getSkusChucked();
+            $paramsSearch = $this->getHandle()->getParamsSearch();
 
-            $this->handleFile->setWriterSuccessful();
-            $this->handleFile->setWriterUnsuccessful();
+            $this->getHandle()->setWriterSuccessful();
+            $this->getHandle()->setWriterUnsuccessful();
 
-            $header = $this->handleFile->getHeader();
-            $this->handleFile->getWriterSuccessful()->insertOne($header);
-            $this->handleFile->getWriterUnsuccessful()->insertOne(['sku', 'message']);
+            $header = $this->getHandle()->getHeader();
+            $this->getHandle()->getWriterSuccessful()->insertOne($header);
+            $this->getHandle()->getWriterUnsuccessful()->insertOne(['sku', 'message']);
 
-            foreach ($skusChucked as $skus) {
-                $this->request($skus);
-                $resultsSuccessful = $this->getSuccessful();
-                $resultsUnsuccessful = $this->getUnsuccessful();
+            foreach ($paramsSearch as $params) {
+                $this->getWeb()->setParams($params)->resolveAllPromises();
+                $resultsSuccessful = $this->getWeb()->getResponsesSuccessful();
+                $resultsUnsuccessful = $this->getWeb()->getResponsesUnsuccessful();
 
-                $this->handleFile->setResultSuccessful($resultsSuccessful);
-                $this->handleFile->setResultUnsuccessful($resultsUnsuccessful);
+                $resultsSuccessfulFormatted = $this->getCrawler()->setResults($resultsSuccessful)->getFormattedResults();
+                $resultsUnsuccessfulFormatted = $this->getCrawler()->setResults($resultsUnsuccessful)->getFormattedResults(false);
 
-                $this->crawler->getWeb()->clear();
+                $this->getHandle()->setResultSuccessful($resultsSuccessfulFormatted);
+                $this->getHandle()->setResultUnsuccessful($resultsUnsuccessfulFormatted);
+
+                $this->getWeb()->clear();
             }
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
-    }
-
-    /**
-     * @param $params
-     * @return $this
-     */
-    private function request($params)
-    {
-        $this->crawler->handleRequests($params);
-        return $this;
-    }
-
-    private function getSuccessful()
-    {
-        return $this->crawler->getFormattedResult();
-    }
-
-    private function getUnsuccessful()
-    {
-        return $this->crawler->getFormattedResult(false);
     }
 }

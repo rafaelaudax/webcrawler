@@ -2,37 +2,50 @@
 
 namespace WebCrawler\Product;
 
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7\Response;
 use Symfony\Component\DomCrawler\Crawler as DomCrawler;
 
-class Crawler
+abstract class Crawler
 {
-    const CSS_SELECTOR = '.catalog__partlookup .catalog__partlookup-item .catalog__partlookup-item-data span';
-
-    /**
-     * @var \WebCrawler\Product\Web
-     */
-    private $web;
-
     /**
      * @var DomCrawler
      */
     private $domCrawler;
 
     /**
+     * @var array 
+     */
+    protected $results = [];
+
+    /**
+     * @param Response $result
+     * @param $paramSearch
+     * @return mixed
+     */
+    abstract protected function handleItemSuccessful(Response $result, $paramSearch);
+
+    /**
+     * @param ClientException $result
+     * @param $paramSearch
+     * @return mixed
+     */
+    abstract protected function handleItemUnsuccessful(ClientException $result, $paramSearch);
+
+    /**
      * Crawler constructor.
      */
     public function __construct()
     {
-        $this->web = new Web();
-        $this->domCrawler = new DomCrawler();
+        $this->setDomCrawler(new DomCrawler());
     }
 
     /**
-     * @return \WebCrawler\Product\Web
+     * @param DomCrawler $domCrawler
      */
-    public function getWeb()
+    public function setDomCrawler($domCrawler)
     {
-        return $this->web;
+        $this->domCrawler = $domCrawler;
     }
 
     /**
@@ -44,84 +57,56 @@ class Crawler
     }
 
     /**
-     * @param array|\Iterator $params
+     * @param array $results
      * @return Crawler
      */
-    public function handleRequests($params)
+    public function setResults($results)
     {
-        $this->getWeb()->setQueryParam($params)->resolveAllPromises();
+        $this->results = $results;
         return $this;
     }
 
     /**
-     * @return \GuzzleHttp\Psr7\Response[]
-     */
-    public function getPagesSuccessful()
-    {
-        return $this->getWeb()->getResponsesSuccessful();
-    }
-
-    /**
-     * @return \GuzzleHttp\Exception\ClientException[]
-     */
-    public function getPagesUnsuccessful()
-    {
-        return $this->getWeb()->getResponsesUnsuccessful();
-    }
-
-    /**
-     * @return \Symfony\Component\DomCrawler\Crawler[]
-     */
-    public function getResultsSuccessful()
-    {
-        $results = [];
-        foreach ($this->getPagesSuccessful() as $key => $page) {
-            $this->getDomCrawler()->clear();
-            $this->getDomCrawler()->add((string) $page->getBody());
-
-            $results[$key] = $this->getDomCrawler()->filter(self::CSS_SELECTOR);
-        }
-        return $results;
-    }
-
-    /**
      * @return array
      */
-    public function getResultsUnsuccessful()
+    public function getResults()
     {
-        $results = [];
-        foreach ($this->getPagesUnsuccessful() as $key => $error) {
-            $results[$key] = $error->getMessage();
-        }
-        return $results;
+        return $this->results;
     }
 
-    public function getFormattedResult($successful = true)
+    /**
+     * @return $this
+     */
+    public function clearDomCrawler()
+    {
+        $this->getDomCrawler()->clear();
+        return $this;
+    }
+
+    /**
+     * @param $html
+     * @param string $rule
+     * @return DomCrawler
+     */
+    protected function domFilter($html, $rule)
+    {
+        $this->getDomCrawler()->add($html);
+        return $this->getDomCrawler()->filter($rule);
+    }
+
+    /**
+     * @param bool $successful
+     * @return array
+     */
+    public function getFormattedResults($successful = true)
     {
         $resultsFormatted = [];
-
-        $results = $successful ? $this->getResultsSuccessful() : $this->getResultsUnsuccessful();
-        foreach ($results as $key => $result) {
-            $item = $result;
-            if (!is_string($result)) {
-                $item = $this->handleItemSuccessful($result);
-            }
-            $resultsFormatted[$key] = $item;
+        foreach ($this->getResults() as $key => $result) {
+            $this->clearDomCrawler();
+            $resultsFormatted[$key] = $successful
+                    ? $this->handleItemSuccessful($result, $key)
+                    : $this->handleItemUnsuccessful($result, $key);
         }
         return $resultsFormatted;
-    }
-
-    /**
-     * @param DomCrawler $result
-     * @return array
-     */
-    private function handleItemSuccessful(DomCrawler $result)
-    {
-        $item = [];
-        foreach (array_chunk($result->extract(['_text']), 3) as $values) {
-            list($sku, $description, $brand) = $values;
-            $item[] = compact('sku', 'description', 'brand');
-        }
-        return $item;
     }
 }

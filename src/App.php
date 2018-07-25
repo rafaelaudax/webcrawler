@@ -2,15 +2,17 @@
 
 namespace WebCrawler;
 
+use WebCrawler\Product\Crawler\Megaron;
+
 final class App
 {
     static private $instance;
 
     static public function init()
     {
-        self::getInstance()->setHeader()->initObStart();
+        self::getInstance()->initObStart();
         self::getInstance()->handleRequest();
-        self::getInstance()->endObFlush();
+        self::getInstance()->setHeader()->endObFlush();
         self::getInstance()->handleApp();
     }
 
@@ -22,7 +24,7 @@ final class App
 
     private function handleApp()
     {
-        (new Integrator())->handleSaveData();
+        (new Integrator())->setType(TYPE_CRAWLER)->handleSaveData();
     }
 
     private function setHeader()

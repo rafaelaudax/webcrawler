@@ -5,7 +5,7 @@ namespace WebCrawler\File\Csv;
 use League\Csv\Reader;
 use League\Csv\Writer;
 
-class Handle
+abstract class Handle
 {
     const EXTENSION_DEFAULT = '.csv';
     const PATH_DATA_DEFAULT = 'data';
@@ -20,6 +20,24 @@ class Handle
      * @var Writer
      */
     private $writerUnsuccessful;
+    /**
+     * @var string
+     */
+    private $fileResult = 'results';
+
+    /**
+     * @var string
+     */
+    private $fileData;
+
+    /**
+     * @return \Iterator
+     */
+    abstract public function getParamsSearch();
+
+    abstract public function handleResultRows($results);
+
+    abstract public function getHeader();
 
     /**
      * @return Handle
@@ -54,16 +72,6 @@ class Handle
     {
         return $this->writerUnsuccessful;
     }
-
-    /**
-     * @var string
-     */
-    private $fileResult = 'results';
-
-    /**
-     * @var string
-     */
-    private $fileData;
 
     /**
      * @return string
@@ -135,12 +143,11 @@ class Handle
     }
 
     /**
-     * @return \Iterator
+     * @return Reader
      */
-    public function getDataSku()
+    public function getReaderData()
     {
-        $reader = Reader::createFromPath($this->getFileData(), 'r');
-        return $reader->fetchColumn();
+        return Reader::createFromPath($this->getFileData(), 'r');
     }
 
     public function setResultSuccessful($results)
@@ -157,32 +164,5 @@ class Handle
         foreach ($rows as $row) {
             $this->getWriterUnsuccessful()->insertOne($row);
         }
-    }
-
-    public function handleResultRows($results)
-    {
-        $rows = [];
-        foreach ($results as $sku => $items) {
-            $rows[$sku][] = $sku;
-            if (is_array($items)) {
-                foreach ($items as $item) {
-                    if ($item) {
-                        $rows[$sku][] = $item['description'];
-                        $rows[$sku][] = $item['brand'];
-                    }
-                }
-            }
-        }
-        return $rows;
-    }
-
-    public function getHeader()
-    {
-        $header = ['sku'];
-        for ($i = 1;$i <= 30;$i++) {
-            $header[] = 'Nome ' . $i;
-            $header[] = 'Marca ' . $i;
-        }
-        return $header;
     }
 }

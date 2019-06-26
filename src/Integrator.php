@@ -2,6 +2,7 @@
 
 namespace WebCrawler;
 
+use DirectoryIterator;
 use Exception;
 use WebCrawler\File\Csv\Handle;
 use WebCrawler\Product\Crawler;
@@ -13,23 +14,7 @@ class Integrator
 
     private $instances = [];
 
-    private $handlesByType = [
-        'megaron' => [
-            'web' => Web\Megaron::class,
-            'crawler' => Crawler\Megaron::class,
-            'handle' => Handle\Megaron::class,
-        ],
-        'agaparts' => [
-            'web' => Web\AgaParts::class,
-            'crawler' => Crawler\AgaParts::class,
-            'handle' => Handle\AgaParts::class,
-        ],
-        'john-deere' => [
-            'web' => Web\JohnDeere::class,
-            'crawler' => Crawler\JohnDeere::class,
-            'handle' => Handle\JohnDeere::class,
-        ]
-    ];
+    private $handlesOptions = [];
 
     /**
      * @param mixed $type
@@ -60,13 +45,24 @@ class Integrator
         return false;
     }
 
+    public function setHandlesOptions()
+    {
+        $directoryIterator = new DirectoryIterator(BASE_PATH.'config/handle/');
+        foreach ($directoryIterator as $file) {
+            if ($file->isFile()) {
+                $this->handlesOptions[$file->getBasename('.php')] = require $file->getPathname();
+            }
+        }
+        return $this;
+    }
+
     /**
      * @return bool|Web
      */
     protected function getWeb()
     {
-        if (isset($this->handlesByType[$this->getType()])) {
-            return $this->getInstanceByClass($this->handlesByType[$this->getType()]['web'] ?: false);
+        if (isset($this->handlesOptions[$this->getType()])) {
+            return $this->getInstanceByClass($this->handlesOptions[$this->getType()]['web'] ?: false);
         }
         return false;
     }
@@ -76,8 +72,8 @@ class Integrator
      */
     protected function getCrawler()
     {
-        if (isset($this->handlesByType[$this->getType()])) {
-            return $this->getInstanceByClass($this->handlesByType[$this->getType()]['crawler'] ?: false);
+        if (isset($this->handlesOptions[$this->getType()])) {
+            return $this->getInstanceByClass($this->handlesOptions[$this->getType()]['crawler'] ?: false);
         }
         return false;
     }
@@ -87,8 +83,8 @@ class Integrator
      */
     protected function getHandle()
     {
-        if (isset($this->handlesByType[$this->getType()])) {
-            return $this->getInstanceByClass($this->handlesByType[$this->getType()]['handle'] ?: false);
+        if (isset($this->handlesOptions[$this->getType()])) {
+            return $this->getInstanceByClass($this->handlesOptions[$this->getType()]['handle'] ?: false);
         }
         return false;
     }

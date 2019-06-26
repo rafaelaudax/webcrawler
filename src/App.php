@@ -24,7 +24,7 @@ final class App
 
     private function handleApp()
     {
-        (new Integrator())->setType(TYPE_CRAWLER)->handleSaveData();
+        (new Integrator())->setHandlesOptions()->setType(TYPE_CRAWLER)->handleSaveData();
     }
 
     private function setHeader()

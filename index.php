@@ -7,7 +7,7 @@ set_time_limit(0);
 
 require_once __DIR__. '/bootstrap.php';
 
-define('FILE_DATA', 'john-deere');
-define('TYPE_CRAWLER', 'john-deere');
+define('FILE_DATA', 'scania');
+define('TYPE_CRAWLER', 'megaron');
 
 App::init();

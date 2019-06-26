@@ -2,6 +2,7 @@
 
 namespace WebCrawler;
 
+use Exception;
 use WebCrawler\File\Csv\Handle;
 use WebCrawler\Product\Crawler;
 use WebCrawler\Product\Web;
@@ -14,14 +15,19 @@ class Integrator
 
     private $handlesByType = [
         'megaron' => [
-            'web' => \WebCrawler\Product\Web\Megaron::class,
-            'crawler' => \WebCrawler\Product\Crawler\Megaron::class,
-            'handle' => \WebCrawler\File\Csv\Handle\Megaron::class,
+            'web' => Web\Megaron::class,
+            'crawler' => Crawler\Megaron::class,
+            'handle' => Handle\Megaron::class,
         ],
         'agaparts' => [
-            'web' => \WebCrawler\Product\Web\AgaParts::class,
-            'crawler' => \WebCrawler\Product\Crawler\AgaParts::class,
-            'handle' => \WebCrawler\File\Csv\Handle\AgaParts::class,
+            'web' => Web\AgaParts::class,
+            'crawler' => Crawler\AgaParts::class,
+            'handle' => Handle\AgaParts::class,
+        ],
+        'john-deere' => [
+            'web' => Web\JohnDeere::class,
+            'crawler' => Crawler\JohnDeere::class,
+            'handle' => Handle\JohnDeere::class,
         ]
     ];
 
@@ -112,7 +118,7 @@ class Integrator
 
                 $this->getWeb()->clear();
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             echo $e->getMessage();
         }
     }

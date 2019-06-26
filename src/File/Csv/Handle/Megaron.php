@@ -2,6 +2,7 @@
 
 namespace WebCrawler\File\Csv\Handle;
 
+use Iterator;
 use WebCrawler\File\Csv\Handle;
 
 class Megaron extends Handle
@@ -29,7 +30,7 @@ class Megaron extends Handle
     }
 
     /**
-     * @return \Iterator
+     * @return array|Iterator
      */
     public function getParamsSearch()
     {
@@ -37,6 +38,6 @@ class Megaron extends Handle
         if ($params) {
             return array_chunk(iterator_to_array($params), 10);
         }
-        return false;
+        return [];
     }
 }

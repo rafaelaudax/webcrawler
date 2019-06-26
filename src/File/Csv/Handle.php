@@ -2,6 +2,7 @@
 
 namespace WebCrawler\File\Csv;
 
+use Iterator;
 use League\Csv\Reader;
 use League\Csv\Writer;
 
@@ -31,7 +32,7 @@ abstract class Handle
     private $fileData;
 
     /**
-     * @return \Iterator
+     * @return array|Iterator
      */
     abstract public function getParamsSearch();
 

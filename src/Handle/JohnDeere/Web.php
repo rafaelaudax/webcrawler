@@ -1,11 +1,11 @@
 <?php
 
-namespace WebCrawler\Product\Web;
+namespace WebCrawler\Handle\JohnDeere;
 
 use GuzzleHttp\Client;
-use WebCrawler\Product\Web;
+use WebCrawler\Handle\Contract\Web as WebContract;
 
-class JohnDeere extends Web
+class Web extends WebContract
 {
     const BASE_URL_DEFAULT = 'https://partscatalog.deere.com/';
     const URL_DEFAULT = 'jdrc/search/type/parts/equipment/338792/term/';

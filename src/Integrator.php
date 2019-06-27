@@ -4,9 +4,9 @@ namespace WebCrawler;
 
 use DirectoryIterator;
 use Exception;
-use WebCrawler\File\Csv\Handle;
-use WebCrawler\Product\Crawler;
-use WebCrawler\Product\Web;
+use WebCrawler\Handle\Contract\Crawler;
+use WebCrawler\Handle\Contract\File\Csv;
+use WebCrawler\Handle\Contract\Web;
 
 class Integrator
 {
@@ -79,7 +79,7 @@ class Integrator
     }
 
     /**
-     * @return bool|Handle
+     * @return bool|Csv
      */
     protected function getHandle()
     {

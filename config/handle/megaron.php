@@ -1,7 +1,11 @@
 <?php
 
+use WebCrawler\Handle\Megaron\Crawler;
+use WebCrawler\Handle\Megaron\File\Csv;
+use WebCrawler\Handle\Megaron\Web;
+
 return [
-    'web' => \WebCrawler\Product\Web\Megaron::class,
-    'crawler' => \WebCrawler\Product\Crawler\Megaron::class,
-    'handle' => \WebCrawler\File\Csv\Handle\Megaron::class,
+    'web' => Web::class,
+    'crawler' => Crawler::class,
+    'handle' => Csv::class,
 ];

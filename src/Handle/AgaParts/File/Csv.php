@@ -1,11 +1,11 @@
 <?php
 
-namespace WebCrawler\File\Csv\Handle;
+namespace WebCrawler\Handle\AgaParts\File;
 
 use Iterator;
-use WebCrawler\File\Csv\Handle;
+use WebCrawler\Handle\Contract\File\Csv as CsvContract;
 
-class AgaParts extends Handle
+class Csv extends CsvContract
 {
 
     public function handleResultRows($results)

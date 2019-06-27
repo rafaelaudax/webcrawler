@@ -1,12 +1,12 @@
 <?php
 
-namespace WebCrawler\Product\Web;
+namespace WebCrawler\Handle\AgaParts;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\PromiseInterface;
-use WebCrawler\Product\Web;
+use WebCrawler\Handle\Contract\Web as WebContract;
 
-class AgaParts extends Web
+class Web extends WebContract
 {
     const BASE_URL_DEFAULT = 'https://www.aga-parts.com/';
     const URL_DEFAULT = 'search';

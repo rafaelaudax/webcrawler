@@ -1,12 +1,12 @@
 <?php
 
-namespace WebCrawler\File\Csv;
+namespace WebCrawler\Handle\Contract\File;
 
 use Iterator;
 use League\Csv\Reader;
 use League\Csv\Writer;
 
-abstract class Handle
+abstract class Csv
 {
     const EXTENSION_DEFAULT = '.csv';
     const PATH_DATA_DEFAULT = 'data';
@@ -41,7 +41,7 @@ abstract class Handle
     abstract public function getHeader();
 
     /**
-     * @return Handle
+     * @return Csv
      */
     public function setWriterSuccessful()
     {
@@ -58,7 +58,7 @@ abstract class Handle
     }
 
     /**
-     * @return Handle
+     * @return Csv
      */
     public function setWriterUnsuccessful()
     {

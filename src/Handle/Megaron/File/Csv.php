@@ -1,11 +1,11 @@
 <?php
 
-namespace WebCrawler\File\Csv\Handle;
+namespace WebCrawler\Handle\Megaron\File;
 
 use Iterator;
-use WebCrawler\File\Csv\Handle;
+use WebCrawler\Handle\Contract\File\Csv as CsvContract;
 
-class Megaron extends Handle
+class Csv extends CsvContract
 {
 
     /**

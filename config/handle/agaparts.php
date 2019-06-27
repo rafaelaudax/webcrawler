@@ -1,7 +1,11 @@
 <?php
 
+use WebCrawler\Handle\AgaParts\Crawler;
+use WebCrawler\Handle\AgaParts\File\Csv;
+use WebCrawler\Handle\AgaParts\Web;
+
 return [
-    'web' => \WebCrawler\Product\Web\AgaParts::class,
-    'crawler' => \WebCrawler\Product\Crawler\AgaParts::class,
-    'handle' => \WebCrawler\File\Csv\Handle\AgaParts::class,
+    'web' => Web::class,
+    'crawler' => Crawler::class,
+    'handle' => Csv::class,
 ];

@@ -1,12 +1,12 @@
 <?php
 
-namespace WebCrawler\Product\Crawler;
+namespace WebCrawler\Handle\Megaron;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
-use WebCrawler\Product\Crawler;
+use WebCrawler\Handle\Contract\Crawler as CrawlerContract;
 
-class Megaron extends Crawler
+class Crawler extends CrawlerContract
 {
     const CSS_SELECTOR = '#listagem_produtos td a';
 

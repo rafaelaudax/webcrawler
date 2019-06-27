@@ -1,11 +1,11 @@
 <?php
 
-namespace WebCrawler\Product\Web;
+namespace WebCrawler\Handle\Megaron;
 
 use GuzzleHttp\Client;
-use WebCrawler\Product\Web;
+use WebCrawler\Handle\Contract\Web as WebContract;
 
-class Megaron extends Web
+class Web extends WebContract
 {
     const BASE_URL_DEFAULT = 'http://megaronpecas.com.br/';
     const URL_DEFAULT = 'categoria/21-scania';

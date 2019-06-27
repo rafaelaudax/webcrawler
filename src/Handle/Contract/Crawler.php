@@ -1,6 +1,6 @@
 <?php
 
-namespace WebCrawler\Product;
+namespace WebCrawler\Handle\Contract;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;

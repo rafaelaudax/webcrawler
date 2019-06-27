@@ -1,12 +1,12 @@
 <?php
 
-namespace WebCrawler\Product\Crawler;
+namespace WebCrawler\Handle\JohnDeere;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
-use WebCrawler\Product\Crawler;
+use WebCrawler\Handle\Contract\Crawler as CrawlerContract;
 
-class JohnDeere extends Crawler
+class Crawler extends CrawlerContract
 {
     const CSS_SELECTOR = '.viewContent .catalogResults.widthLimit .partsResult .col-lg-9.col-xm-9.col-md-9.col-xl-9.col-xs-6 span';
 

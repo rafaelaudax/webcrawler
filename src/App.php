@@ -2,8 +2,6 @@
 
 namespace WebCrawler;
 
-use WebCrawler\Product\Crawler\Megaron;
-
 final class App
 {
     static private $instance;

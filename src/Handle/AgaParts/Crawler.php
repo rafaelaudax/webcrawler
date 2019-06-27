@@ -1,12 +1,12 @@
 <?php
 
-namespace WebCrawler\Product\Crawler;
+namespace WebCrawler\Handle\AgaParts;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
-use WebCrawler\Product\Crawler;
+use WebCrawler\Handle\Contract\Crawler as CrawlerContract;
 
-class AgaParts extends Crawler
+class Crawler extends CrawlerContract
 {
     const CSS_SELECTOR = '.catalog__partlookup .catalog__partlookup-item .catalog__partlookup-item-data span';
 

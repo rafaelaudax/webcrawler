@@ -7,7 +7,7 @@ set_time_limit(0);
 
 require_once __DIR__. '/bootstrap.php';
 
-define('FILE_DATA', 'scania');
-define('TYPE_CRAWLER', 'megaron');
+define('FILE_DATA', 'mercedes-benz');
+define('TYPE_CRAWLER', 'mercedes-benz');
 
 App::init();

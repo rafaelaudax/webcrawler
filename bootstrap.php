@@ -6,4 +6,4 @@ error_reporting(E_ALL);
 
 require_once __DIR__. '/vendor/autoload.php';
 
-define('BASE_PATH', __DIR__ . DIRECTORY_SEPARATOR);
+define('BASE_PATH', __DIR__);

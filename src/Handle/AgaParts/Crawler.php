@@ -12,27 +12,36 @@ class Crawler extends CrawlerContract
 
     /**
      * @param Response $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return array|mixed
      */
-    protected function handleItemSuccessful(Response $result, $paramSearch)
+    protected function handleItemSuccessful(Response $result, $paramSearch, $data)
     {
-        $data = $this->domFilter((string) $result->getBody(), self::CSS_SELECTOR);
-        $item = [];
-        foreach (array_chunk($data->extract(['_text']), 3) as $values) {
-            list($sku, $description, $brand) = $values;
-            $item[] = compact('sku', 'description', 'brand');
+        $domFilter = $this->domFilter((string) $result->getBody(), self::CSS_SELECTOR);
+        $items = [];
+        foreach (array_chunk($domFilter->extract(['_text']), 3) as $values) {
+            [, $description, $brand] = $values;
+            $items[] = compact('description', 'brand');
         }
-        return $item;
+
+        if (!$items) {
+            $items[] = [
+                'name' => 'Código não encontrado'
+            ];
+        }
+
+        return $items;
     }
 
     /**
      * @param ClientException $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return mixed
      */
-    protected function handleItemUnsuccessful(ClientException $result, $paramSearch)
+    protected function handleItemUnsuccessful(ClientException $result, $paramSearch, $data)
     {
-        return $result->getMessage();
+        return [$result->getMessage()];
     }
 }

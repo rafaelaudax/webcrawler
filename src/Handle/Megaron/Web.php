@@ -15,7 +15,13 @@ class Web extends WebContract
         'verify' => false,
     ];
 
-    protected function makeRequest(Client $client, $param)
+    /**
+     * @param Client $client
+     * @param string $param
+     * @param array $data
+     * @return mixed
+     */
+    protected function makeRequest(Client $client, $param, $data)
     {
         return $client->postAsync(self::URL_DEFAULT, [
             'multipart' => [

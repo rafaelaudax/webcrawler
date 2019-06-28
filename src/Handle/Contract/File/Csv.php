@@ -2,168 +2,66 @@
 
 namespace WebCrawler\Handle\Contract\File;
 
-use Iterator;
-use League\Csv\Reader;
-use League\Csv\Writer;
+use Exception;
+use WebCrawler\Handle\Contract\File;
 
-abstract class Csv
+abstract class Csv extends File
 {
-    const EXTENSION_DEFAULT = '.csv';
-    const PATH_DATA_DEFAULT = 'data';
-    const PATH_RESULT_DEFAULT = 'result';
-
-    /**
-     * @var Writer
-     */
-    private $writerSuccessful;
-
-    /**
-     * @var Writer
-     */
-    private $writerUnsuccessful;
     /**
      * @var string
      */
-    private $fileResult = 'results';
+    protected $extension = 'csv';
 
-    /**
-     * @var string
-     */
-    private $fileData;
-
-    /**
-     * @return array|Iterator
-     */
-    abstract public function getParamsSearch();
-
-    abstract public function handleResultRows($results);
-
-    abstract public function getHeader();
-
-    /**
-     * @return Csv
-     */
-    public function setWriterSuccessful()
+    public function __construct()
     {
-        $this->writerSuccessful = Writer::createFromPath($this->getFileResultSuccessful(), 'w+');
-        return $this;
+        try {
+            $this->getWriterSuccessful()->insertOne($this->getHeaderSuccess());
+            $this->getWriterUnsuccessful()->insertOne($this->getHeaderUnsuccess());
+        } catch (Exception $e) {}
     }
 
     /**
-     * @return Writer
+     * @return array
      */
-    public function getWriterSuccessful()
-    {
-        return $this->writerSuccessful;
-    }
+    abstract public function getHeaderSuccess();
 
     /**
-     * @return Csv
+     * @return array
      */
-    public function setWriterUnsuccessful()
-    {
-        $this->writerUnsuccessful = Writer::createFromPath($this->getFileResultUnsuccessful(), 'w+');
-        return $this;
-    }
+    abstract public function getHeaderUnsuccess();
 
     /**
-     * @return Writer
+     * @return array
      */
-    public function getWriterUnsuccessful()
-    {
-        return $this->writerUnsuccessful;
-    }
+    abstract public function getHeaderReaderData();
 
     /**
      * @return string
      */
-    public function getPathData()
-    {
-        return BASE_PATH . self::PATH_DATA_DEFAULT . DIRECTORY_SEPARATOR;
-    }
+    abstract public function getReaderDataParamSearch();
 
     /**
-     * @return string
+     * @return array
+     * @throws \League\Csv\Exception
      */
-    public function getPathResult()
+    public function getDataForSearch()
     {
-        return BASE_PATH . self::PATH_RESULT_DEFAULT . DIRECTORY_SEPARATOR;
-    }
+        $params = $this->getReaderData()->getRecords($this->getHeaderReaderData());
+        if ($params) {
+            $paramsToArray = iterator_to_array($params);
+            $paramsFiltered = array_filter($paramsToArray, function ($param) {
+                return (bool) ($param[$this->getReaderDataParamSearch()] ?? false);
+            });
 
-    /**
-     * @param $fileResult
-     * @return $this
-     */
-    public function setFileResult($fileResult)
-    {
-        $this->fileResult = $fileResult;
-        return $this;
-    }
+            $paramsFormatted = array_map(function($param) {
+                return [
+                    'paramSearch' => $param[$this->getReaderDataParamSearch()] ?? false,
+                    'data' => $param
+                ];
+            }, $paramsFiltered);
 
-    /**
-     * @param $suffix
-     * @return string
-     */
-    public function getFileResult($suffix)
-    {
-        return $this->getPathResult() . $this->fileData . '-' . $this->fileResult . '-' . $suffix . self::EXTENSION_DEFAULT;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFileResultSuccessful()
-    {
-        return $this->getFileResult('success');
-    }
-
-    /**
-     * @return string
-     */
-    public function getFileResultUnsuccessful()
-    {
-        return $this->getFileResult('unsuccess');
-    }
-
-    /**
-     * @param $fileData
-     * @return $this
-     */
-    public function setFileData($fileData)
-    {
-        $this->fileData = $fileData;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFileData()
-    {
-        return $this->getPathData() . $this->fileData . self::EXTENSION_DEFAULT;
-    }
-
-    /**
-     * @return Reader
-     */
-    public function getReaderData()
-    {
-        return Reader::createFromPath($this->getFileData(), 'r');
-    }
-
-    public function setResultSuccessful($results)
-    {
-        $rows = $this->handleResultRows($results);
-        foreach ($rows as $row) {
-            $this->getWriterSuccessful()->insertOne($row);
+            return array_chunk($paramsFormatted, 10);
         }
-    }
-
-    public function setResultUnsuccessful($results)
-    {
-        $rows = $this->handleResultRows($results);
-        foreach ($rows as $row) {
-            $this->getWriterUnsuccessful()->insertOne($row);
-        }
+        return [];
     }
 }

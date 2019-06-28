@@ -12,27 +12,25 @@ class Crawler extends CrawlerContract
 
     /**
      * @param Response $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return mixed
      */
-    protected function handleItemSuccessful(Response $result, $paramSearch)
+    protected function handleItemSuccessful(Response $result, $paramSearch, $data)
     {
-        $data = $this->domFilter((string) $result->getBody(), self::CSS_SELECTOR);
-        $item = [];
-        foreach (array_chunk($data->extract(['_text']), 3) as $values) {
-            list($sku, $description, $brand) = $values;
-            $item[] = compact('sku', 'description', 'brand');
-        }
-        return $item;
+        // TODO: Implement handleItemSuccessful() method.
+        return [];
     }
 
     /**
      * @param ClientException $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return mixed
      */
-    protected function handleItemUnsuccessful(ClientException $result, $paramSearch)
+    protected function handleItemUnsuccessful(ClientException $result, $paramSearch, $data)
     {
         // TODO: Implement handleItemUnsuccessful() method.
+        return [];
     }
 }

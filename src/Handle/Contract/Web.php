@@ -37,10 +37,11 @@ abstract class Web
 
     /**
      * @param Client $client
-     * @param $param
+     * @param string $param
+     * @param array $data
      * @return mixed
      */
-    abstract protected function makeRequest(Client $client, $param);
+    abstract protected function makeRequest(Client $client, $param, $data);
 
     /**
      * @return Client
@@ -54,7 +55,7 @@ abstract class Web
     }
 
     /**
-     * @return PromiseInterface[]
+     * @return array|array PromiseInterface[]
      */
     public function getPromises()
     {
@@ -79,7 +80,7 @@ abstract class Web
     }
     
     /**
-     * @param array|\Iterator $params
+     * @param array $params
      * @return $this
      */
     public function setParams($params)
@@ -89,11 +90,18 @@ abstract class Web
     }
 
     /**
-     * @return array|\Iterator
+     * @return array
      */
     public function getParams()
     {
         return $this->params ?: [];
+    }
+
+    public function getDataParam($paramSearch)
+    {
+        $params = $this->getParams();
+        $keyData = array_search($paramSearch, array_column($params, 'paramSearch'));
+        return $params[$keyData]['data'];
     }
 
     /**
@@ -120,8 +128,9 @@ abstract class Web
     protected function makePromises()
     {
         foreach ($this->getParams() as $param) {
-            $this->addPromises($param, $this->makeRequest($this->getClient(), $param));
-        }
+            [ 'paramSearch' => $paramSearch, 'data' => $data ] = $param;
+            $this->addPromises($paramSearch, $this->makeRequest($this->getClient(), $paramSearch, $data));
+       }
         return $this;
     }
 
@@ -143,7 +152,10 @@ abstract class Web
         $successful = [];
         foreach ($this->getResponses() as $key => $response) {
             if ($this->isSuccess($response)) {
-                $successful[$key] = $response['value'];
+                $successful[$key] = [
+                    'response' => $response['value'],
+                    'data' => $this->getDataParam($key)
+                ];
             }
         }
         return $successful;
@@ -157,7 +169,10 @@ abstract class Web
         $unsuccessful = [];
         foreach ($this->getResponses() as $key => $response) {
             if ($this->isError($response)) {
-                $unsuccessful[$key] = $response['value'];
+                $unsuccessful[$key] = [
+                    'response' => $response['value'],
+                    'data' => $this->getDataParam($key)
+                ];
             }
         }
         return $unsuccessful;

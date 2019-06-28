@@ -2,22 +2,22 @@
 
 namespace WebCrawler\Handle\MercedesBenz\File;
 
-use Iterator;
 use WebCrawler\Handle\Contract\File\Csv as CsvContract;
 
 class Csv extends CsvContract
 {
 
     /**
-     * @param $results
+     * @param array $results
      * @return array
      */
     public function handleResultRows($results)
     {
         $rows = [];
         foreach ($results as $code => $items) {
-            foreach ($items as $item) {
-                $rows[] = array_values($item);
+            ['resultCrawler' => $resultCrawler, 'data' => $data] = $items;
+            foreach ($resultCrawler as $item) {
+                $rows[] = array_values(array_merge($data, $item));
             }
         }
         return $rows;
@@ -26,20 +26,32 @@ class Csv extends CsvContract
     /**
      * @return array
      */
-    public function getHeader()
+    public function getHeaderSuccess()
     {
-        return [ 'COD_COMPL', 'Código', 'Descrição' ];
+        return array_merge($this->getHeaderReaderData(), [ 'Código', 'Descrição' ]);
     }
 
     /**
-     * @return array|Iterator
+     * @return array
      */
-    public function getParamsSearch()
+    public function getHeaderUnsuccess()
     {
-        $params = $this->setFileData(FILE_DATA)->getReaderData()->fetchColumn();
-        if ($params) {
-            return array_chunk(iterator_to_array($params), 10);
-        }
-        return [];
+        return array_merge($this->getHeaderReaderData(), [ 'Messagem' ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaderReaderData()
+    {
+        return [ 'ID_ORIGINAL', 'COD_COMPL' ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getReaderDataParamSearch()
+    {
+        return 'COD_COMPL';
     }
 }

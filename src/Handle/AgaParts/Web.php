@@ -19,10 +19,11 @@ class Web extends WebContract
 
     /**
      * @param Client $client
-     * @param $param
+     * @param string $param
+     * @param array $data
      * @return PromiseInterface
      */
-    protected function makeRequest(Client $client, $param)
+    protected function makeRequest(Client $client, $param, $data)
     {
         return $client->getAsync(self::URL_DEFAULT, [ 'query' => [self::NAME_QUERY_PARAM_DEFAULT => $param]]);
     }

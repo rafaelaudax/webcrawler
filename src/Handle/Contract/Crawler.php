@@ -20,17 +20,19 @@ abstract class Crawler
 
     /**
      * @param Response $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return mixed
      */
-    abstract protected function handleItemSuccessful(Response $result, $paramSearch);
+    abstract protected function handleItemSuccessful(Response $result, $paramSearch, $data);
 
     /**
      * @param ClientException $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return mixed
      */
-    abstract protected function handleItemUnsuccessful(ClientException $result, $paramSearch);
+    abstract protected function handleItemUnsuccessful(ClientException $result, $paramSearch, $data);
 
     /**
      * Crawler constructor.
@@ -84,7 +86,7 @@ abstract class Crawler
     }
 
     /**
-     * @param $html
+     * @param string $html
      * @param string $rule
      * @return DomCrawler
      */
@@ -98,14 +100,20 @@ abstract class Crawler
      * @param bool $successful
      * @return array
      */
-    public function getFormattedResults($successful = true)
+    public function getFormattedResults($successful)
     {
         $resultsFormatted = [];
         foreach ($this->getResults() as $key => $result) {
             $this->clearDomCrawler();
-            $resultsFormatted[$key] = $successful
-                    ? $this->handleItemSuccessful($result, $key)
-                    : $this->handleItemUnsuccessful($result, $key);
+
+            $resultCrawler = $successful
+                ? $this->handleItemSuccessful($result['response'], $key, $result['data'])
+                : $this->handleItemUnsuccessful($result['response'], $key, $result['data']);
+
+            $resultsFormatted[$key] = [
+                'resultCrawler' => $resultCrawler,
+                'data' => $result['data'],
+            ];
         }
         return $resultsFormatted;
     }

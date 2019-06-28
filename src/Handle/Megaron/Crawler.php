@@ -12,55 +12,36 @@ class Crawler extends CrawlerContract
 
     /**
      * @param Response $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return array|mixed
      */
-    protected function handleItemSuccessful(Response $result, $paramSearch)
+    protected function handleItemSuccessful(Response $result, $paramSearch, $data)
     {
-        $data = $this->domFilter((string) $result->getBody(), self::CSS_SELECTOR);
-        $item = [];
-        foreach (array_chunk($data->extract(['_text']), 2) as $values) {
-            list($code, $name) = $values;
-            $item[] = compact('code', 'name');
+        $domFilter = $this->domFilter((string) $result->getBody(), self::CSS_SELECTOR);
+        $items = [];
+        foreach (array_chunk($domFilter->extract(['_text']), 2) as $values) {
+            [ $code, $name ] = $values;
+            $items[] = compact('code', 'name');
         }
 
-        if ($this->hasCode($paramSearch, $item)) {
-            return $item[$this->getIndexCode($paramSearch, $item)];
+        if (!$items) {
+            $items[] = [
+                'name' => 'Código não encontrado'
+            ];
         }
 
-        return [
-            'code' => (string) $paramSearch,
-            'name' => 'Código não encontrado'
-        ];
+        return $items;
     }
 
     /**
      * @param ClientException $result
-     * @param $paramSearch
+     * @param string $paramSearch
+     * @param array $data
      * @return mixed|string
      */
-    protected function handleItemUnsuccessful(ClientException $result, $paramSearch)
+    protected function handleItemUnsuccessful(ClientException $result, $paramSearch, $data)
     {
-        return $result->getMessage();
-    }
-
-    /**
-     * @param $code
-     * @param $array
-     * @return false|int|string
-     */
-    private function getIndexCode($code, $array)
-    {
-        return array_search($code, array_column($array, 'code'));
-    }
-
-    /**
-     * @param $code
-     * @param $array
-     * @return bool
-     */
-    private function hasCode($code, $array)
-    {
-        return $this->getIndexCode($code, $array) !== false;
+        return [$result->getMessage()];
     }
 }

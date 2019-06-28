@@ -2,7 +2,6 @@
 
 namespace WebCrawler\Handle\JohnDeere\File;
 
-use Iterator;
 use WebCrawler\Handle\Contract\File\Csv as CsvContract;
 
 class Csv extends CsvContract
@@ -13,21 +12,39 @@ class Csv extends CsvContract
         return $rows;
     }
 
-    public function getHeader()
+    /**
+     * @return array
+     */
+    public function getHeaderSuccess()
+    {
+        $header = [];
+        return $header;
+
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaderUnsuccess()
     {
         $header = [];
         return $header;
     }
 
     /**
-     * @return array|Iterator
+     * @return array
      */
-    public function getParamsSearch()
+    public function getHeaderReaderData()
     {
-        $params = $this->setFileData(FILE_DATA)->getReaderData()->fetchColumn();
-        if ($params) {
-            return array_chunk(iterator_to_array($params), 10);
-        }
-        return [];
+        $header = [''];
+        return $header;
+    }
+
+    /**
+     * @return string
+     */
+    public function getReaderDataParamSearch()
+    {
+        return '';
     }
 }

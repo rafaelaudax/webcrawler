@@ -5,7 +5,7 @@ namespace WebCrawler;
 use DirectoryIterator;
 use Exception;
 use WebCrawler\Handle\Contract\Crawler;
-use WebCrawler\Handle\Contract\File\Csv;
+use WebCrawler\Handle\Contract\File;
 use WebCrawler\Handle\Contract\Web;
 
 class Integrator
@@ -47,7 +47,7 @@ class Integrator
 
     public function setHandlesOptions()
     {
-        $directoryIterator = new DirectoryIterator(BASE_PATH.'config/handle/');
+        $directoryIterator = new DirectoryIterator(BASE_PATH.'/config/handle/');
         foreach ($directoryIterator as $file) {
             if ($file->isFile()) {
                 $this->handlesOptions[$file->getBasename('.php')] = require $file->getPathname();
@@ -79,7 +79,7 @@ class Integrator
     }
 
     /**
-     * @return bool|Csv
+     * @return bool|File
      */
     protected function getHandle()
     {
@@ -92,25 +92,19 @@ class Integrator
     public function handleSaveData()
     {
         try {
-            $paramsSearch = $this->getHandle()->getParamsSearch();
+            $dataForSearch = $this->getHandle()->getDataForSearch();
 
-            $this->getHandle()->setWriterSuccessful();
-            $this->getHandle()->setWriterUnsuccessful();
-
-            $header = $this->getHandle()->getHeader();
-            $this->getHandle()->getWriterSuccessful()->insertOne($header);
-            $this->getHandle()->getWriterUnsuccessful()->insertOne(['sku', 'message']);
-
-            foreach ($paramsSearch as $params) {
+            foreach ($dataForSearch as $params) {
                 $this->getWeb()->setParams($params)->resolveAllPromises();
                 $resultsSuccessful = $this->getWeb()->getResponsesSuccessful();
                 $resultsUnsuccessful = $this->getWeb()->getResponsesUnsuccessful();
 
-                $resultsSuccessfulFormatted = $this->getCrawler()->setResults($resultsSuccessful)->getFormattedResults();
+                $resultsSuccessfulFormatted = $this->getCrawler()->setResults($resultsSuccessful)->getFormattedResults(true);
                 $resultsUnsuccessfulFormatted = $this->getCrawler()->setResults($resultsUnsuccessful)->getFormattedResults(false);
 
-                $this->getHandle()->setResultSuccessful($resultsSuccessfulFormatted);
-                $this->getHandle()->setResultUnsuccessful($resultsUnsuccessfulFormatted);
+
+                $this->getHandle()->writing($resultsSuccessfulFormatted, true);
+                $this->getHandle()->writing($resultsUnsuccessfulFormatted, false);
 
                 $this->getWeb()->clear();
             }

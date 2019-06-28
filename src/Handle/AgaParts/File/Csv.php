@@ -2,48 +2,56 @@
 
 namespace WebCrawler\Handle\AgaParts\File;
 
-use Iterator;
 use WebCrawler\Handle\Contract\File\Csv as CsvContract;
 
 class Csv extends CsvContract
 {
-
     public function handleResultRows($results)
     {
         $rows = [];
         foreach ($results as $sku => $items) {
-            $rows[$sku][] = $sku;
-            if (is_array($items)) {
-                foreach ($items as $item) {
-                    if ($item) {
-                        $rows[$sku][] = $item['description'];
-                        $rows[$sku][] = $item['brand'];
-                    }
-                }
+            ['resultCrawler' => $resultCrawler, 'data' => $data] = $items;
+            foreach ($resultCrawler as $item) {
+                $rows[] = array_values(array_merge($data, $item));
             }
         }
         return $rows;
     }
 
-    public function getHeader()
+    /**
+     * @return array
+     */
+    public function getHeaderSuccess()
     {
-        $header = ['sku'];
+        $header = [];
         for ($i = 1;$i <= 30;$i++) {
             $header[] = 'Nome ' . $i;
             $header[] = 'Marca ' . $i;
         }
-        return $header;
+        return array_merge($this->getHeaderReaderData(), $header);
     }
 
     /**
-     * @return array|Iterator
+     * @return array
      */
-    public function getParamsSearch()
+    public function getHeaderUnsuccess()
     {
-        $params = $this->setFileData(FILE_DATA)->getReaderData()->fetchColumn();
-        if ($params) {
-            return array_chunk(iterator_to_array($params), 10);
-        }
-        return [];
+        return array_merge($this->getHeaderReaderData(), [ 'Messagem' ]);
+    }
+
+    /**
+     * @return array
+     */
+    public function getHeaderReaderData()
+    {
+        return [ 'ID_ORIGINAL', 'COD_COMPL' ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getReaderDataParamSearch()
+    {
+        return 'COD_COMPL';
     }
 }

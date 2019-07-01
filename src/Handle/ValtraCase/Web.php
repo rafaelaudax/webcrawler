@@ -7,7 +7,7 @@ use WebCrawler\Handle\Contract\Web as WebContract;
 
 class Web extends WebContract
 {
-    const BASE_URL_DEFAULT = 'http://www.tractorparts.com.br/busca-produtos.php?q=836747124&loadFilter=1';
+    const BASE_URL_DEFAULT = 'http://www.tractorparts.com.br/';
     const URL_DEFAULT = 'busca-produtos.php';
     const NAME_QUERY_PARAM_DEFAULT = 'q';
 

@@ -26,18 +26,9 @@ class Web extends WebContract
     {
         return $client->getAsync(self::URL_DEFAULT, [
             'query' => [
-                self::NAME_QUERY_PARAM_DEFAULT => $this->clearParam($param),
+                self::NAME_QUERY_PARAM_DEFAULT => $param,
                 'loja' => '476243',
             ],
         ]);
-    }
-
-    /**
-     * @param string $param
-     * @return mixed
-     */
-    private function clearParam($param)
-    {
-        return str_replace('-','', $param);
     }
 }

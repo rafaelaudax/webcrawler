@@ -7,7 +7,7 @@ set_time_limit(0);
 
 require_once __DIR__. '/bootstrap.php';
 
-define('FILE_NAME', 'volvo');
-define('TYPE_CRAWLER', 'volvo');
+define('FILE_NAME', 'valtra-case');
+define('TYPE_CRAWLER', 'valtra-case');
 
 App::init();

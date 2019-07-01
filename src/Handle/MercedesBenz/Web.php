@@ -3,7 +3,6 @@
 namespace WebCrawler\Handle\MercedesBenz;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\Promise\PromiseInterface;
 use WebCrawler\Handle\Contract\Web as WebContract;
 
 class Web extends WebContract

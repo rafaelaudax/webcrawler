@@ -7,7 +7,7 @@ set_time_limit(0);
 
 require_once __DIR__. '/bootstrap.php';
 
-define('FILE_NAME', 'sabo-site-code');
-define('TYPE_CRAWLER', 'sabo-site-code');
+define('FILE_NAME', 'sabo');
+define('TYPE_CRAWLER', 'sabo');
 
 App::init();

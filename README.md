@@ -40,7 +40,7 @@ Para utilizar esse projeto, é preciso configurar qual arquivo vai ser consumido
 
 Abrindo o arquivo index.php, você vera as seguintes linhas:
 
-'''php
+```php
 <?php
 
 use WebCrawler\App;
@@ -54,10 +54,10 @@ define('FILE_NAME', 'REPLACE_WITH_FILE_NAME');
 define('TYPE_CRAWLER', 'REPLACE_WITH_HANDLER');
 
 App::init();
-'''
+```
 
 É preciso subistituir os valores das constantes pelos seus respectivos valores.
 
-*FILE_NAME:* Essa constante vai determinar qual arquivo vai ser lido para efetuar as buscas, não é preciso colocar a estensão do arquivo, o script vai buscar um arquivo com o nome informado na pasta data e com a extensão csv, essa constante também determina qual o nome dos arquivos de resultado, todos os resultados vão estar presentes em dois arquivos que estaram presentes dentro da pasta results com os seguintes nomes: FILE_NAME-success.csv e FILE_NAME-unsuccess.csv
+**FILE_NAME:** Essa constante vai determinar qual arquivo vai ser lido para efetuar as buscas, não é preciso colocar a estensão do arquivo, o script vai buscar um arquivo com o nome informado na pasta data e com a extensão csv, essa constante também determina qual o nome dos arquivos de resultado, todos os resultados vão estar presentes em dois arquivos que estaram presentes dentro da pasta results com os seguintes nomes: FILE_NAME-success.csv e FILE_NAME-unsuccess.csv
 
-*TYPE_CRAWLER:* Essa constante determina qual Handler vai ser utilizado, os Handlers são carregados utilizando os arquivos presentes dentro da pasta config/handler, essa constante precisa ter o valor igual ao nome de algum desses arquivos sem a extensão.
+**TYPE_CRAWLER:** Essa constante determina qual Handler vai ser utilizado, os Handlers são carregados utilizando os arquivos presentes dentro da pasta config/handler, essa constante precisa ter o valor igual ao nome de algum desses arquivos sem a extensão.

@@ -7,7 +7,7 @@ set_time_limit(0);
 
 require_once __DIR__. '/bootstrap.php';
 
-define('FILE_NAME', 'sabo');
-define('TYPE_CRAWLER', 'sabo');
+define('FILE_NAME', 'google');
+define('TYPE_CRAWLER', 'google');
 
 App::init();

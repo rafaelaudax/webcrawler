@@ -9,6 +9,12 @@ class Csv extends CsvContract
     public function handleResultRows($results)
     {
         $rows = [];
+        foreach ($results as $code => $items) {
+            ['resultCrawler' => $resultCrawler, 'data' => $data] = $items;
+            foreach ($resultCrawler as $item) {
+                $rows[] = array_values(array_merge($data, $item));
+            }
+        }
         return $rows;
     }
 
@@ -17,9 +23,7 @@ class Csv extends CsvContract
      */
     public function getHeaderSuccess()
     {
-        $header = [];
-        return $header;
-
+        return array_merge($this->getHeaderReaderData(), [ 'Descrição' ]);
     }
 
     /**
@@ -27,8 +31,7 @@ class Csv extends CsvContract
      */
     public function getHeaderUnsuccess()
     {
-        $header = [];
-        return $header;
+        return array_merge($this->getHeaderReaderData(), [ 'Messagem' ]);
     }
 
     /**
@@ -36,8 +39,7 @@ class Csv extends CsvContract
      */
     public function getHeaderReaderData()
     {
-        $header = [''];
-        return $header;
+        return [ 'ID_ORIGINAL', 'COD_COMPL' ];
     }
 
     /**
@@ -45,6 +47,6 @@ class Csv extends CsvContract
      */
     public function getReaderDataParamSearch()
     {
-        return '';
+        return 'COD_COMPL';
     }
 }

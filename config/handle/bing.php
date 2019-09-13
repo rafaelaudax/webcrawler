@@ -1,8 +1,8 @@
 <?php
 
-use WebCrawler\Handle\Sabo\Crawler;
-use WebCrawler\Handle\Sabo\File\Csv;
-use WebCrawler\Handle\Sabo\Web;
+use WebCrawler\Handle\Bing\Crawler;
+use WebCrawler\Handle\Bing\File\Csv;
+use WebCrawler\Handle\Bing\Web;
 
 return [
     'web' => Web::class,

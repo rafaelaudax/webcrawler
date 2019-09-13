@@ -46,7 +46,7 @@ abstract class Web
     /**
      * @return Client
      */
-    protected function getClient()
+    public function getClient()
     {
         if (!$this->client) {
             $this->client = new Client($this->getClientOptions());
@@ -78,7 +78,7 @@ abstract class Web
     {
         $this->promises[$key] = $promise;
     }
-    
+
     /**
      * @param array $params
      * @return $this

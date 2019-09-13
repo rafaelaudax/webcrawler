@@ -1,6 +1,6 @@
 <?php
 
-namespace WebCrawler\Handle\Caterpillar\File;
+namespace WebCrawler\Handle\Bing\File;
 
 use WebCrawler\Handle\Contract\File\Csv as CsvContract;
 
@@ -28,7 +28,7 @@ class Csv extends CsvContract
      */
     public function getHeaderSuccess()
     {
-        return array_merge($this->getHeaderReaderData(), [ 'Descrição', 'Categoria' ]);
+        return array_merge($this->getHeaderReaderData(), [ 'Titulo', 'Descrição' ]);
     }
 
     /**
@@ -44,7 +44,7 @@ class Csv extends CsvContract
      */
     public function getHeaderReaderData()
     {
-        return [ 'ID_ORIGINAL', 'COD_COMPL' ];
+        return [ 'ID_ORIGINAL', 'COD_COMPL', 'INFO_COMPL' ];
     }
 
     /**

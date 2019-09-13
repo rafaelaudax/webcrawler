@@ -8,7 +8,7 @@ use WebCrawler\Handle\Contract\Crawler as CrawlerContract;
 
 class Crawler extends CrawlerContract
 {
-    const CSS_SELECTOR = '.products .product .woocommerce-loop-product__title';
+    const CSS_SELECTOR = '.product .product_title, .product .summary .product_meta .posted_in a';
 
     /**
      * @param Response $result
@@ -20,8 +20,9 @@ class Crawler extends CrawlerContract
     {
         $domFilter = $this->domFilter((string) $result->getBody(), self::CSS_SELECTOR);
         $items = [];
-        foreach ($domFilter->extract(['_text']) as $values) {
-            $items[] = compact('values');
+        foreach (array_chunk($domFilter->extract(['_text']), 2) as $values) {
+            [$title, $category] = $values;
+            $items[] = compact('title', 'category');
         }
 
         if (!$items) {

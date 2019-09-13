@@ -7,6 +7,7 @@ use Exception;
 use WebCrawler\Handle\Contract\Crawler;
 use WebCrawler\Handle\Contract\File;
 use WebCrawler\Handle\Contract\Web;
+use GuzzleHttp\Client;
 
 class Integrator
 {
@@ -93,6 +94,13 @@ class Integrator
     {
         try {
             $dataForSearch = $this->getHandle()->getDataForSearch();
+
+            if (TYPE_CRAWLER === 'john-deere') {
+                $this
+                    ->getWeb()
+                    ->getClient()
+                    ->get('servlet/com.deere.u90.jdparts.view.publicservlets.HomeUnsigned?selectedMenu=JDPARTS_HOME&userAction=countrySelected&country=BR&language=54');
+            }
 
             foreach ($dataForSearch as $params) {
                 $this->getWeb()->setParams($params)->resolveAllPromises();

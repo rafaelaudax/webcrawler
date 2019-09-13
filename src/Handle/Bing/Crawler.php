@@ -1,6 +1,6 @@
 <?php
 
-namespace WebCrawler\Handle\JohnDeere;
+namespace WebCrawler\Handle\Bing;
 
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Response;
@@ -8,25 +8,23 @@ use WebCrawler\Handle\Contract\Crawler as CrawlerContract;
 
 class Crawler extends CrawlerContract
 {
-    const CSS_SELECTOR = 'form[name="PartDetails"] > table > tr:nth-of-type(2) > td:last-of-type > table > tr';
+    const CSS_SELECTOR = '#b_results .b_algo h2 a, #b_results .b_algo .b_caption p';
 
     /**
      * @param Response $result
      * @param string $paramSearch
      * @param array $data
-     * @return mixed
+     * @return array|mixed
      */
     protected function handleItemSuccessful(Response $result, $paramSearch, $data)
     {
         $domFilter = $this->domFilter((string) $result->getBody(), self::CSS_SELECTOR);
         $items = [];
-        foreach ($domFilter->extract(['_text']) as $values) {
-            $values = mb_convert_encoding($values, 'ISO-8859-1', 'UTF-8');
-            $values = trim(preg_replace('/[\s  ]+/', ' ', $values));
-            if (strpos($values, 'Descrição') !== false) {
-                $values = trim(str_replace('Descrição:', '', $values));
-                $items[] = compact('values');
-            }
+        dump($domFilter->extract(['_text', '_href']));
+        // dump($domFilter, $domFilter->extract(['_text']));
+        foreach (array_chunk($domFilter->extract(['_text']), 2) as $values) {
+            [$title, $description] = $values;
+            $items[] = compact('title', 'description');
         }
 
         if (!$items) {
@@ -42,7 +40,7 @@ class Crawler extends CrawlerContract
      * @param ClientException $result
      * @param string $paramSearch
      * @param array $data
-     * @return mixed
+     * @return mixed|string
      */
     protected function handleItemUnsuccessful(ClientException $result, $paramSearch, $data)
     {

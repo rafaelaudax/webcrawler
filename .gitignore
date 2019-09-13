@@ -111,3 +111,13 @@ $RECYCLE.BIN/
 docker-compose.yml
 
 # End of https://www.gitignore.io/api/windows,composer,phpstorm
+
+
+# Project
+
+!.gitkeep
+
+data/*
+result/*
+
+# End Project

@@ -99,7 +99,6 @@ abstract class File
     {
         $fileName = "{$this->getFileName()}.{$this->getExtension()}";
         $this->readerData = Reader::createFromPath($this->joinPath(BASE_PATH, 'data', $fileName));
-        $this->readerData->setDelimiter(';');
         return $this;
     }
 

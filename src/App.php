@@ -16,7 +16,7 @@ final class App
 
     private function handleRequest()
     {
-        echo 'aplicação iniciada com sucesso, os dados estão sendo carregados e 
+        echo 'aplicação iniciada com sucesso, os dados estão sendo carregados e
         salvo no arquivo .csv na pasta result na raiz do projeto';
     }
 

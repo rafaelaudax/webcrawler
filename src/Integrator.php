@@ -4,9 +4,9 @@ namespace WebCrawler;
 
 use DirectoryIterator;
 use Exception;
-use WebCrawler\Handle\Contract\Crawler;
-use WebCrawler\Handle\Contract\File;
-use WebCrawler\Handle\Contract\Web;
+use WebCrawler\Handler\Contract\Crawler;
+use WebCrawler\Handler\Contract\File;
+use WebCrawler\Handler\Contract\Web;
 use GuzzleHttp\Client;
 
 class Integrator
